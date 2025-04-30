@@ -1,4 +1,7 @@
 from flask import Flask, request, jsonify, render_template_string
+from flask_cors import CORS
+
+CORS(app)  # Esto habilita CORS para todas las rutas
 
 app = Flask(__name__)
 
@@ -217,14 +220,21 @@ def ver_datos():
     <script>
         // Función para obtener los datos desde la API
         const fetchData = async () => {
-            try {
-                const response = await fetch('https://proyecto-embedded.onrender.com/api/datos');
-                const data = await response.json();
-                updateDisplay(data);
-            } catch (error) {
-                console.error('Error al obtener datos de la API:', error);
-            }
-        };
+    try {
+        const response = await fetch('https://proyecto-embedded.onrender.com/api/datos', {
+            method: 'POST',  // Cambiar de GET a POST
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})  // Asegúrate de enviar un cuerpo vacío o los datos que corresponda
+        });
+        const data = await response.json();
+        updateDisplay(data);
+    } catch (error) {
+        console.error('Error al obtener datos de la API:', error);
+    }
+};
+
 
         // Función para actualizar la página con los datos recibidos
         const updateDisplay = (data) => {
