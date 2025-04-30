@@ -14,3 +14,6 @@ def recibir_datos():
 @app.route('/datos', methods=['GET'])
 def enviar_datos():
     return jsonify(datos_planta)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=8080)  # Asegúrate de escuchar en todas las interfaces y el puerto adecuado
