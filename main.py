@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify, render_template_string
-
+from flask_cors import CORS  # Importar CORS
 
 app = Flask(__name__)
-
+# Habilitar CORS para todas las rutas
+CORS(app)
 # Lista para guardar los datos de los últimos 10 registros
 datos_recibidos = []  
 MAX_REGISTROS = 10  # Número máximo de registros a mantener
