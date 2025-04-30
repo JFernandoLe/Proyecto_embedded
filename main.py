@@ -7,6 +7,8 @@ datos_recibidos = []
 MAX_REGISTROS = 10  # Número máximo de registros a mantener
 
 # Ruta para recibir los datos desde la Raspberry Pi
+from datetime import datetime
+
 @app.route('/api/datos', methods=['POST'])
 def recibir_datos():
     data = request.get_json()
@@ -17,17 +19,24 @@ def recibir_datos():
     humedad = data.get('humedad')
     luz = data.get('luz')
 
-    # Añadir los datos a la lista y asegurarse de que no haya más de MAX_REGISTROS elementos
+    # Añadir un timestamp
+    timestamp = int(datetime.utcnow().timestamp() * 1000)  # Obtener el tiempo en milisegundos
+
+    # Añadir los datos a la lista
     datos_recibidos.append({
         'temperatura': temperatura,
         'humedad': humedad,
-        'luz': luz
+        'luz': luz,
+        'timestamp': timestamp
     })
-    if len(datos_recibidos) > MAX_REGISTROS:
-        datos_recibidos.pop(0)  # Eliminar el primer elemento si excede el límite
 
-    print(f"Temperatura: {temperatura}, Humedad: {humedad}, Luz: {luz}")
+    # Limitar la lista a los últimos 10 registros
+    if len(datos_recibidos) > MAX_REGISTROS:
+        datos_recibidos.pop(0)
+
+    print(f"Temperatura: {temperatura}, Humedad: {humedad}, Luz: {luz}, Timestamp: {timestamp}")
     return jsonify({'mensaje': 'Datos recibidos correctamente'}), 200
+
 
 # Ruta para mostrar los datos
 @app.route('/ver-datos')
