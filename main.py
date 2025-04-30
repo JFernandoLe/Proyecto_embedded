@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import os
 
 app = Flask(__name__)
 
@@ -15,5 +16,6 @@ def recibir_datos():
 def enviar_datos():
     return jsonify(datos_planta)
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080)  # Asegúrate de escuchar en todas las interfaces y el puerto adecuado
+# Configura el puerto dinámico
+port = int(os.environ.get("PORT", 10000))  # Usado en Render para configurar el puerto
+app.run(host='0.0.0.0', port=port)
