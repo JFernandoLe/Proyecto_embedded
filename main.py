@@ -83,6 +83,17 @@ def ver_datos():
     let chartHumedad, chartTemperatura, chartSuelo;
 
     function inicializarGraficos() {
+        
+        chartSuelo = Highcharts.chart('sueloChart', {
+            chart: { type: 'spline', backgroundColor: 'transparent' },
+            title: { text: 'Humedad del Suelo' },
+            xAxis: { type: 'datetime', labels: { format: '{value:%H:%M:%S}' } },
+            yAxis: { title: { text: null } },
+            series: [{ name: 'H. Suelo', data: [] }],
+            credits: { enabled: false },
+            colors: ['#27ae60']
+        });
+        
         chartHumedad = Highcharts.chart('humedadChart', {
             chart: { type: 'spline', backgroundColor: 'transparent' },
             title: { text: 'Humedad Relativa' },
@@ -103,15 +114,7 @@ def ver_datos():
             colors: ['#e74c3c']
         });
 
-        chartSuelo = Highcharts.chart('sueloChart', {
-            chart: { type: 'spline', backgroundColor: 'transparent' },
-            title: { text: 'Humedad del Suelo' },
-            xAxis: { type: 'datetime', labels: { format: '{value:%H:%M:%S}' } },
-            yAxis: { title: { text: null } },
-            series: [{ name: 'H. Suelo', data: [] }],
-            credits: { enabled: false },
-            colors: ['#27ae60']
-        });
+        
     }
 
     function actualizarDatos() {
