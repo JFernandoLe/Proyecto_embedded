@@ -15,18 +15,18 @@ def recibir_datos():
 
     temperatura = data.get('temperatura')
     humedad = data.get('humedad')
-    luz = data.get('luz')
+    humedad_suelo = data.get('humedad_suelo')
 
     # Añadir los datos a la lista y asegurarse de que no haya más de MAX_REGISTROS elementos
     datos_recibidos.append({
         'temperatura': temperatura,
         'humedad': humedad,
-        'luz': luz
+        'humedad_suelo': humedad_suelo
     })
     if len(datos_recibidos) > MAX_REGISTROS:
         datos_recibidos.pop(0)  # Eliminar el primer elemento si excede el límite
 
-    print(f"Temperatura: {temperatura}, Humedad: {humedad}, Luz: {luz}")
+    print(f"Temperatura: {temperatura}, Humedad: {humedad}, Humedad Suelo: {humedad_suelo}")
     return jsonify({'mensaje': 'Datos recibidos correctamente'}), 200
 
 # Ruta para mostrar los datos en una página web
@@ -50,13 +50,13 @@ def ver_datos():
             <tr>
                 <th>Temperatura (°C)</th>
                 <th>Humedad (%)</th>
-                <th>Luz (%)</th>
+                <th>Humedad Suelo (%)</th>
             </tr>
             {% for d in datos %}
             <tr>
                 <td>{{ d.temperatura }}</td>
                 <td>{{ d.humedad }}</td>
-                <td>{{ d.luz }}</td>
+                <td>{{ d.humedad_suelo }}</td>
             </tr>
             {% endfor %}
         </table>
