@@ -27,6 +27,10 @@ def recibir_datos():
 
     return jsonify({'mensaje': 'Datos recibidos correctamente'}), 200
 
+@app.route('/api/ultimos-datos')
+def ultimos_datos():
+    return jsonify(datos_recibidos)
+
 @app.route('/ver-datos')
 def ver_datos():
     html = """<!DOCTYPE html>
@@ -76,36 +80,66 @@ def ver_datos():
         </div>
 
         <script>
-            const datos = {{ datos | tojson }};
-            const timestamps = datos.map(d => d.timestamp);
-            const humedad = datos.map(d => parseFloat(d.humedad));
-            const temperatura = datos.map(d => parseFloat(d.temperatura));
-            const humedadSuelo = datos.map(d => parseFloat(d.humedad_suelo));
+    let chartHumedad, chartTemperatura, chartSuelo;
 
-            const generarGrafico = (id, data, nombre, color) => {
-                Highcharts.chart(id, {
-                    chart: { type: 'spline', backgroundColor: 'transparent' },
-                    title: { text: nombre },
-                    xAxis: {
-                        type: 'datetime',
-                        categories: timestamps,
-                        labels: {
-                            formatter: function() {
-                                return new Date(this.value).toLocaleTimeString();
-                            }
-                        }
-                    },
-                    yAxis: { title: { text: null } },
-                    series: [{ name: nombre, data: data }],
-                    credits: { enabled: false },
-                    colors: [color]
-                });
-            };
+    function inicializarGraficos() {
+        chartHumedad = Highcharts.chart('humedadChart', {
+            chart: { type: 'spline', backgroundColor: 'transparent' },
+            title: { text: 'Humedad Relativa' },
+            xAxis: { type: 'datetime', labels: { format: '{value:%H:%M:%S}' } },
+            yAxis: { title: { text: null } },
+            series: [{ name: 'Humedad', data: [] }],
+            credits: { enabled: false },
+            colors: ['#3498db']
+        });
 
-            generarGrafico('humedadChart', humedad, 'Humedad Relativa', '#3498db');
-            generarGrafico('temperaturaChart', temperatura, 'Temperatura', '#e74c3c');
-            generarGrafico('sueloChart', humedadSuelo, 'Humedad Suelo', '#27ae60');
-        </script>
+        chartTemperatura = Highcharts.chart('temperaturaChart', {
+            chart: { type: 'spline', backgroundColor: 'transparent' },
+            title: { text: 'Temperatura' },
+            xAxis: { type: 'datetime', labels: { format: '{value:%H:%M:%S}' } },
+            yAxis: { title: { text: null } },
+            series: [{ name: 'Temperatura', data: [] }],
+            credits: { enabled: false },
+            colors: ['#e74c3c']
+        });
+
+        chartSuelo = Highcharts.chart('sueloChart', {
+            chart: { type: 'spline', backgroundColor: 'transparent' },
+            title: { text: 'Humedad del Suelo' },
+            xAxis: { type: 'datetime', labels: { format: '{value:%H:%M:%S}' } },
+            yAxis: { title: { text: null } },
+            series: [{ name: 'H. Suelo', data: [] }],
+            credits: { enabled: false },
+            colors: ['#27ae60']
+        });
+    }
+
+    function actualizarDatos() {
+        fetch('/api/ultimos-datos')
+            .then(res => res.json())
+            .then(datos => {
+                if (datos.length === 0) return;
+
+                const ult = datos[datos.length - 1];
+                document.querySelector('.text-info').innerText = `${ult.humedad_suelo}%`;
+                document.querySelector('.text-danger').innerText = `${ult.temperatura}°C`;
+                document.querySelector('.text-primary').innerText = `${ult.humedad}%`;
+
+                const hum = datos.map(d => [d.timestamp, parseFloat(d.humedad)]);
+                const temp = datos.map(d => [d.timestamp, parseFloat(d.temperatura)]);
+                const suelo = datos.map(d => [d.timestamp, parseFloat(d.humedad_suelo)]);
+
+                chartHumedad.series[0].setData(hum);
+                chartTemperatura.series[0].setData(temp);
+                chartSuelo.series[0].setData(suelo);
+            });
+    }
+
+    inicializarGraficos();
+    actualizarDatos();
+    setInterval(actualizarDatos, 5000); // actualiza cada 5 segundos
+    </script>
+
     </body>
     </html>"""
     return render_template_string(html, datos=datos_recibidos)
