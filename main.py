@@ -73,7 +73,7 @@ def ver_datos():
             </div>
 
             <div class="row">
-                <div class="col-md-4"><div id="sueloChar"></div></div>
+                <div class="col-md-4"><div id="sueloChart"></div></div>
                 <div class="col-md-4"><div id="temperaturaChart"></div></div>
                 <div class="col-md-4"><div id="humedadChart"></div></div>
             </div>
